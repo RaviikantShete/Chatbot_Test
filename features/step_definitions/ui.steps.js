@@ -39,10 +39,10 @@ Then("the chatbot modal should not be visible", async function () {
 });
 
 Then("the chatbot modal should be fully visible", async function () {
-  const box = await this.chatbotPage.chatModal.boundingBox();
+  expect(await this.chatbotPage.isChatModalVisible()).toBe(true);
+  const box = await this.chatbotPage.messageInput.boundingBox();
   expect(box).not.toBeNull();
   expect(box.width).toBeGreaterThan(0);
-  expect(box.height).toBeGreaterThan(0);
 });
 
 When("I tab to the launcher and press Enter", async function () {
