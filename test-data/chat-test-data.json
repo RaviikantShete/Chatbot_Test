@@ -1,0 +1,62 @@
+{
+  "validQueries": [
+    {
+      "technology": "javaj2ee",
+      "experience": "4-6",
+      "year": "2024",
+      "query": "What is the salary for Java developers with 4-6 years experience?",
+      "expectedKeywords": ["salary", "java", "lakh", "per annum"]
+    },
+    {
+      "technology": "python",
+      "experience": "2-4",
+      "year": "2024",
+      "query": "Python developer salary range",
+      "expectedKeywords": ["salary", "python"]
+    },
+    {
+      "technology": "reactjs",
+      "experience": "6-8",
+      "year": "2024",
+      "query": "What do React developers earn?",
+      "expectedKeywords": ["salary", "react"]
+    }
+  ],
+  "edgeCases": [
+    {
+      "input": "",
+      "description": "empty input"
+    },
+    {
+      "input": "   ",
+      "description": "whitespace only"
+    },
+    {
+      "input": "' OR '1'='1",
+      "description": "SQL injection attempt"
+    },
+    {
+      "input": "<script>alert('xss')</script>",
+      "description": "XSS attempt"
+    },
+    {
+      "input": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "description": "excessively long input"
+    },
+    {
+      "input": "What is the weather today?",
+      "description": "off-topic query"
+    }
+  ],
+  "performanceThresholds": {
+    "modalOpen": 3000,
+    "standardQuery": 15000,
+    "dataIntensiveQuery": 20000,
+    "sequentialQueries": 45000
+  },
+  "viewports": {
+    "desktop": { "width": 1280, "height": 720 },
+    "tablet": { "width": 768, "height": 1024 },
+    "mobile": { "width": 390, "height": 844 }
+  }
+}

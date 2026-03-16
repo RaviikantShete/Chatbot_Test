@@ -1,0 +1,45 @@
+name: Paywatch Chatbot E2E Tests
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium
+
+      - name: Create .env file
+        run: |
+          echo "BASE_URL=${{ secrets.BASE_URL }}" >> .env
+          echo "DEFAULT_TECHNOLOGY=javaj2ee" >> .env
+          echo "DEFAULT_EXPERIENCE=4-6" >> .env
+          echo "DEFAULT_YEAR=2024" >> .env
+          echo "BROWSER=chromium" >> .env
+          echo "HEADED=false" >> .env
+          echo "TIMEOUT=30000" >> .env
+          echo "CHATBOT_RESPONSE_TIMEOUT=15000" >> .env
+
+      - name: Run tests and generate report
+        run: npm run test:report
+
+      - name: Upload test report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: Paywatch-Test-Report
+          path: reports/html/index.html
