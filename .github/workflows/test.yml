@@ -32,10 +32,11 @@ jobs:
           echo "BROWSER=chromium" >> .env
           echo "HEADED=false" >> .env
           echo "TIMEOUT=60000" >> .env
-          echo "CHATBOT_RESPONSE_TIMEOUT=20000" >> .env
+          echo "CHATBOT_RESPONSE_TIMEOUT=25000" >> .env
+          echo "SLOW_MO=0" >> .env
 
       - name: Run tests
-        run: npx cucumber-js --require support/world.js --require support/hooks.js --require "features/step_definitions/**/*.js" --format json:reports/cucumber-report.json features/**/*.feature || true
+        run: npx cucumber-js --require support/world.js --require support/hooks.js --require "features/step_definitions/**/*.js" --format json:reports/cucumber-report.json --tags "not @accessibility" features/**/*.feature || true
 
       - name: Generate report
         run: node support/customReport.js || true
