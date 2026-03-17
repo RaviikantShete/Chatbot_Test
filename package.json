@@ -2,15 +2,15 @@
   "name": "paywatch-chatbot-tests",
   "version": "1.0.0",
   "scripts": {
-    "test": "npx cucumber-js --require support/world.js --require support/hooks.js --require \"features/step_definitions/**/*.js\" features/**/*.feature",
-    "test:headed": "cross-env HEADED=true npx cucumber-js --require support/world.js --require support/hooks.js --require \"features/step_definitions/**/*.js\" features/**/*.feature",
-    "test:smoke": "npx cucumber-js --require support/world.js --require support/hooks.js --require \"features/step_definitions/**/*.js\" --tags @smoke features/**/*.feature",
-    "test:regression": "npx cucumber-js --require support/world.js --require support/hooks.js --require \"features/step_definitions/**/*.js\" --tags @regression features/**/*.feature",
-    "test:ui": "npx cucumber-js --require support/world.js --require support/hooks.js --require \"features/step_definitions/**/*.js\" --tags @ui features/**/*.feature",
-    "test:functional": "npx cucumber-js --require support/world.js --require support/hooks.js --require \"features/step_definitions/**/*.js\" --tags @functional features/**/*.feature",
-    "test:accessibility": "npx cucumber-js --require support/world.js --require support/hooks.js --require \"features/step_definitions/**/*.js\" --tags @accessibility features/**/*.feature",
-    "test:performance": "npx cucumber-js --require support/world.js --require support/hooks.js --require \"features/step_definitions/**/*.js\" --tags @performance features/**/*.feature",
-    "test:report": "npx cucumber-js --require support/world.js --require support/hooks.js --require \"features/step_definitions/**/*.js\" --format json:reports/cucumber-report.json features/**/*.feature && node support/customReport.js"
+    "test": "node node_modules/@cucumber/cucumber/bin/cucumber-js --require support/world.js --require support/hooks.js --require \"features/step_definitions/**/*.js\" features/**/*.feature",
+    "test:headed": "set HEADED=true && node node_modules/@cucumber/cucumber/bin/cucumber-js --require support/world.js --require support/hooks.js --require \"features/step_definitions/**/*.js\" features/**/*.feature",
+    "test:smoke": "node node_modules/@cucumber/cucumber/bin/cucumber-js --require support/world.js --require support/hooks.js --require \"features/step_definitions/**/*.js\" --tags @smoke features/**/*.feature",
+    "test:regression": "node node_modules/@cucumber/cucumber/bin/cucumber-js --require support/world.js --require support/hooks.js --require \"features/step_definitions/**/*.js\" --tags @regression features/**/*.feature",
+    "test:ui": "node node_modules/@cucumber/cucumber/bin/cucumber-js --require support/world.js --require support/hooks.js --require \"features/step_definitions/**/*.js\" --tags @ui features/**/*.feature",
+    "test:functional": "node node_modules/@cucumber/cucumber/bin/cucumber-js --require support/world.js --require support/hooks.js --require \"features/step_definitions/**/*.js\" --tags @functional features/**/*.feature",
+    "test:accessibility": "node node_modules/@cucumber/cucumber/bin/cucumber-js --require support/world.js --require support/hooks.js --require \"features/step_definitions/**/*.js\" --tags @accessibility features/**/*.feature",
+    "test:performance": "node node_modules/@cucumber/cucumber/bin/cucumber-js --require support/world.js --require support/hooks.js --require \"features/step_definitions/**/*.js\" --tags @performance features/**/*.feature",
+    "test:report": "node node_modules/@cucumber/cucumber/bin/cucumber-js --require support/world.js --require support/hooks.js --require \"features/step_definitions/**/*.js\" --format json:reports/cucumber-report.json features/**/*.feature && node support/customReport.js"
   },
   "dependencies": {
     "@cucumber/cucumber": "^10.3.1",
