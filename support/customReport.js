@@ -80,17 +80,17 @@ const featureRows = features.map((f,i)=>`
         <div class="scenario-header" onclick="toggleSteps('steps-${i}-${j}',event)">
           <span class="scenario-icon">${s.passed?'&#10003;':'&#10007;'}</span>
           <span class="scenario-name">${escapeHtml(s.name)}</span>
-          <div class="scenario-tags">${s.tags.map(t=>`<span class="tag">${cleanTag(t)}</span>`).join('')}</div>
+          <div class="scenario-tags">${s.tags.map(t=>{const clean=t.replace(/^@/,'');const label=clean.charAt(0).toUpperCase()+clean.slice(1);const cls='tag tag-'+clean.toLowerCase();return `<span class="${cls}">${label}</span>`;}).join('')}</div>
           <span class="scenario-toggle">&#9660;</span>
         </div>
         <div id="steps-${i}-${j}" class="steps-list hidden">
           ${s.steps.map(st=>`
           <div class="step-item step-${st.status}">
-            <span class="step-keyword">${escapeHtml(st.keyword.trim())}</span>
+            <div class="step-status-badge step-badge-${st.status}">${(st.keyword.trim()==='Before'||st.keyword.trim()==='After')?'HOOK':st.status==='passed'?'PASS':st.status==='failed'?'FAIL':'SKIP'}</div>
+            <span class="step-keyword step-${st.keyword.trim().toLowerCase()}">${escapeHtml(st.keyword.trim())}</span>
             <span class="step-name">${escapeHtml(st.name)}</span>
-            <span class="step-dur">${(st.duration/1e9).toFixed(2)}s</span>
-            <span class="step-status-icon">${st.status==='passed'?'&#10003;':st.status==='failed'?'&#10007;':'&#8722;'}</span>
-            ${st.error?`<div class="step-error">${escapeHtml(st.error.substring(0,300))}</div>`:''}
+            <span class="step-dur-badge">${(st.duration/1e9).toFixed(2)}s</span>
+            ${st.error?`<div class="step-error">&#9888; ${escapeHtml(st.error.substring(0,300))}</div>`:''}
           </div>`).join('')}
         </div>
       </div>`).join('')}
@@ -240,6 +240,8 @@ thead th.td-center{text-align:center;}
 .scenarios-container{padding:12px;display:flex;flex-direction:column;gap:7px;}
 .scenario-card{background:var(--surface);border-radius:8px;border:1px solid var(--border);overflow:hidden;}
 .scenario-pass{border-left:3px solid #48bb78;}
+.scenario-pass .scenario-icon{background:#c6f6d5;color:#276749;border-radius:50%;width:20px;height:20px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;}
+.scenario-fail .scenario-icon{background:#fed7d7;color:#9b2c2c;border-radius:50%;width:20px;height:20px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;}
 .scenario-fail{border-left:3px solid #fc8181;}
 .scenario-header{padding:10px 14px;display:flex;align-items:center;gap:8px;cursor:pointer;}
 .scenario-header:hover{background:var(--row-hover);}
@@ -248,20 +250,47 @@ thead th.td-center{text-align:center;}
 .scenario-fail .scenario-icon{color:#e53e3e;}
 .scenario-name{flex:1;font-size:12px;font-weight:600;color:var(--text);}
 .scenario-tags{display:flex;gap:4px;flex-wrap:wrap;}
-.tag{background:var(--tag-bg);color:var(--tag-text);padding:2px 7px;border-radius:999px;font-size:10px;font-weight:600;}
+.tag{padding:2px 8px;border-radius:999px;font-size:10px;font-weight:700;letter-spacing:0.3px;}
+.tag-smoke{background:#fef3c7;color:#92400e;}
+.tag-regression{background:#ede9fe;color:#5b21b6;}
+.tag-functional{background:#d1fae5;color:#065f46;}
+.tag-ui{background:#dbeafe;color:#1e40af;}
+.tag-performance{background:#fee2e2;color:#991b1b;}
+.tag-accessibility{background:#fce7f3;color:#9d174d;}
+.tag-history{background:#e0f2fe;color:#0c4a6e;}
+.tag-default{background:var(--tag-bg);color:var(--tag-text);}
+[data-theme="dark"] .tag-smoke{background:#451a03;color:#fcd34d;}
+[data-theme="dark"] .tag-regression{background:#2e1065;color:#c4b5fd;}
+[data-theme="dark"] .tag-functional{background:#022c22;color:#6ee7b7;}
+[data-theme="dark"] .tag-ui{background:#1e3a5f;color:#93c5fd;}
+[data-theme="dark"] .tag-performance{background:#450a0a;color:#fca5a5;}
+[data-theme="dark"] .tag-accessibility{background:#500724;color:#f9a8d4;}
+[data-theme="dark"] .tag-history{background:#0c2340;color:#7dd3fc;}
 .scenario-toggle{color:var(--text3);font-size:10px;}
 .steps-list{border-top:1px solid var(--border);}
-.step-item{padding:8px 14px;display:flex;align-items:flex-start;gap:8px;border-bottom:1px solid var(--bg);font-size:12px;flex-wrap:wrap;}
-.step-passed{background:rgba(72,187,120,0.05);}
-.step-failed{background:rgba(252,129,129,0.08);}
-.step-skipped{background:rgba(214,158,46,0.05);}
-.step-keyword{font-weight:700;color:#805ad5;min-width:44px;flex-shrink:0;}
-.step-name{flex:1;color:var(--text2);}
-.step-dur{color:var(--text3);font-size:10px;min-width:34px;text-align:right;flex-shrink:0;}
-.step-status-icon{font-weight:700;min-width:14px;text-align:center;flex-shrink:0;}
-.step-passed .step-status-icon{color:#38a169;}
-.step-failed .step-status-icon{color:#e53e3e;}
-.step-skipped .step-status-icon{color:#d69e2e;}
+.step-item{padding:7px 14px;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--border);font-size:12px;flex-wrap:wrap;}
+.step-item:last-child{border-bottom:none;}
+.step-passed{background:rgba(72,187,120,0.04);}
+.step-failed{background:rgba(252,129,129,0.07);}
+.step-skipped{background:rgba(214,158,46,0.04);}
+.step-item:has(.step-before),.step-item:has(.step-after){background:rgba(156,163,175,0.05);border-bottom:1px dashed var(--border);}
+.step-status-badge{font-size:9px;font-weight:800;padding:2px 6px;border-radius:3px;letter-spacing:0.8px;flex-shrink:0;min-width:34px;text-align:center;}
+.step-badge-passed{background:#c6f6d5;color:#276749;}
+.step-badge-failed{background:#fed7d7;color:#9b2c2c;}
+.step-badge-skipped{background:#fef3c7;color:#92400e;}
+.step-badge-hook{background:#f3f4f6;color:#6b7280;}
+[data-theme="dark"] .step-badge-hook{background:#374151;color:#9ca3af;}
+.step-keyword{font-weight:700;min-width:64px;flex-shrink:0;font-size:11px;letter-spacing:0.5px;text-transform:uppercase;}
+.step-given{color:#1e40af;}
+.step-when{color:#065f46;}
+.step-then{color:#5b21b6;}
+.step-and{color:#92400e;font-style:italic;}
+.step-but{color:#991b1b;font-style:italic;}
+.step-before{color:#9ca3af;font-size:10px;text-transform:uppercase;letter-spacing:1px;}
+.step-after{color:#9ca3af;font-size:10px;text-transform:uppercase;letter-spacing:1px;}
+.step-name{flex:1;color:var(--text2);line-height:1.4;}
+.step-dur-badge{color:var(--text3);font-size:10px;background:var(--surface2);padding:2px 6px;border-radius:4px;flex-shrink:0;font-family:monospace;}
+.step-error{width:100%;margin-top:6px;padding:10px 12px;background:var(--fail-bg);border-radius:6px;font-size:11px;color:var(--fail-text);font-family:monospace;white-space:pre-wrap;border-left:3px solid #fc8181;}
 .step-error{width:100%;margin-top:6px;padding:8px;background:var(--fail-bg);border-radius:4px;font-size:11px;color:var(--fail-text);font-family:monospace;white-space:pre-wrap;}
 .no-results{text-align:center;padding:32px;color:var(--text3);font-size:13px;background:var(--surface);border-radius:10px;}
 .footer{text-align:center;padding:18px;font-size:12px;color:var(--text3);border-top:1px solid var(--border);background:var(--surface);display:flex;align-items:center;justify-content:center;gap:6px;}
