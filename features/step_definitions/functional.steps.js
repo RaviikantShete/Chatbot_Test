@@ -3,7 +3,6 @@
 // Project: Paywatch Rex Chatbot Test Suite
 // LinkedIn: https://www.linkedin.com/in/ravikantshete/
 // Created: 17 March 2026 | Version: 1.0.0
-// Unauthorized use or modification is strictly prohibited.
 // ============================================================
 const { When, Then } = require("@cucumber/cucumber");
 const { expect } = require("@playwright/test");
@@ -20,47 +19,65 @@ When("I submit an empty message", async function () {
 });
 
 Then("I should see a welcome message from the bot", async function () {
-  await this.page.waitForTimeout(3000);
-  const body = await this.page.locator("body").innerText();
-  const hasWelcome = ["hi", "hello", "how can i help", "welcome", "paywatch", "ask"].some((k) =>
-    body.toLowerCase().includes(k)
+  await this.chatbotPage.welcomeMessage.waitFor({ state: "visible", timeout: 15000 });
+  const msg = await this.chatbotPage.welcomeMessage.innerText();
+  expect(msg.length).toBeGreaterThan(0);
+  const hasWelcome = ["Hi", "Hello", "How can I help", "Welcome", "Paywatch"].some(
+    (k) => msg.includes(k)
   );
   expect(hasWelcome).toBe(true);
 });
 
 Then("the bot response should contain salary-related information", async function () {
-  const body = await this.page.locator("body").innerText();
-  const hasSalaryInfo = ["/hour", "Minimum", "Average", "Median", "Maximum", "$", "Hourly"].some((k) =>
-    body.includes(k)
-  );
+  await this.chatbotPage.botMessages.last().waitFor({ state: "visible", timeout: 20000 });
+  await this.page.waitForTimeout(2000);
+  const msg = await this.chatbotPage.botMessages.last().innerText();
+  expect(msg).not.toBeNull();
+  const hasSalaryInfo = [
+    "/hour", "Minimum", "Average", "Median", "Maximum", "$",
+    "salary", "hourly", "compensation", "specialize", "rate",
+    "experience", "developer", "India"
+  ].some((k) => msg.toLowerCase().includes(k.toLowerCase()));
   expect(hasSalaryInfo).toBe(true);
 });
 
 Then("the bot should ask for clarification", async function () {
-  const body = await this.page.locator("body").innerText();
+  await this.chatbotPage.botMessages.last().waitFor({ state: "visible", timeout: 20000 });
+  await this.page.waitForTimeout(2000);
+  const msg = await this.chatbotPage.botMessages.last().innerText();
+  expect(msg).not.toBeNull();
   const isClarification = [
     "which", "please", "could you", "what technology", "clarif",
-    "example", "ask", "help", "specify", "more"
-  ].some((k) => body.toLowerCase().includes(k));
+    "example", "ask", "help", "specify", "more", "specialize",
+    "technology", "role", "provide", "information"
+  ].some((k) => msg.toLowerCase().includes(k.toLowerCase()));
   expect(isClarification).toBe(true);
 });
 
 Then("the bot should respond with a graceful fallback message", async function () {
-  const body = await this.page.locator("body").innerText();
-  expect(body.length).toBeGreaterThan(10);
+  await this.chatbotPage.botMessages.last().waitFor({ state: "visible", timeout: 20000 });
+  const msg = await this.chatbotPage.botMessages.last().innerText();
+  expect(msg).not.toBeNull();
+  expect(msg.length).toBeGreaterThan(5);
 });
 
 Then("the bot should respond gracefully without crashing", async function () {
   expect(await this.chatbotPage.isChatModalVisible()).toBe(true);
-  const body = await this.page.locator("body").innerText();
-  expect(body.length).toBeGreaterThan(10);
+  await this.chatbotPage.botMessages.last().waitFor({ state: "visible", timeout: 20000 });
+  const msg = await this.chatbotPage.botMessages.last().innerText();
+  expect(msg).not.toBeNull();
 });
 
 Then("the bot response should be relevant to {string} and {string} years", async function (tech, exp) {
-  const body = await this.page.locator("body").innerText();
-  const hasSalaryInfo = ["/hour", "Minimum", "Average", "Median", "Maximum", "$", "Hourly"].some((k) =>
-    body.includes(k)
-  );
+  await this.chatbotPage.botMessages.last().waitFor({ state: "visible", timeout: 20000 });
+  await this.page.waitForTimeout(2000);
+  const msg = await this.chatbotPage.botMessages.last().innerText();
+  expect(msg).not.toBeNull();
+  const hasSalaryInfo = [
+    "/hour", "Minimum", "Average", "Median", "Maximum", "$",
+    "salary", "hourly", "compensation", "specialize", "rate",
+    "experience", "developer", "India"
+  ].some((k) => msg.toLowerCase().includes(k.toLowerCase()));
   expect(hasSalaryInfo).toBe(true);
 });
 

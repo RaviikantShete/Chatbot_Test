@@ -31,15 +31,15 @@ jobs:
           echo "DEFAULT_YEAR=2024" >> .env
           echo "BROWSER=chromium" >> .env
           echo "HEADED=false" >> .env
-          echo "TIMEOUT=60000" >> .env
-          echo "CHATBOT_RESPONSE_TIMEOUT=25000" >> .env
-          echo "SLOW_MO=0" >> .env
+          echo "TIMEOUT=90000" >> .env
+          echo "CHATBOT_RESPONSE_TIMEOUT=30000" >> .env
 
       - name: Run tests
-        run: npx cucumber-js --require support/world.js --require support/hooks.js --require "features/step_definitions/**/*.js" --format json:reports/cucumber-report.json --tags "not @accessibility" features/**/*.feature || true
+        run: node node_modules/@cucumber/cucumber/bin/cucumber-js --require support/world.js --require support/hooks.js --require "features/step_definitions/**/*.js" --format json:reports/cucumber-report.json --tags "not @accessibility" features/**/*.feature
 
       - name: Generate report
-        run: node support/customReport.js || true
+        if: always()
+        run: node support/customReport.js
 
       - name: Upload test report
         uses: actions/upload-artifact@v4

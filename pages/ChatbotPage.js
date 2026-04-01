@@ -3,22 +3,21 @@
 // Project: Paywatch Rex Chatbot Test Suite
 // LinkedIn: https://www.linkedin.com/in/ravikantshete/
 // Created: 17 March 2026 | Version: 1.0.0
-// Unauthorized use or modification is strictly prohibited.
 // ============================================================
-
 require("dotenv").config();
 
 class ChatbotPage {
   constructor(page) {
     this.page = page;
-    this.launcherIcon = page.locator('[aria-label="Open chat"]');
-    this.closeButton  = page.locator('[aria-label="Close chat"]');
-    this.messageInput = page.locator('textarea[placeholder="Type your message here..."]');
-    this.sendButton   = page.locator('[aria-label="Send message"]');
-    this.botMessages  = page.locator('p.mb-2.leading-relaxed');
-    this.userMessages = page.locator('div.jsx-4443d8c1010b725b.text-sm.leading-\\[18px\\]');
-    this.loadingIndicator = page.locator('[class*="loading"],[class*="typing"]').first();
-    this.tooltip = page.locator('[role="tooltip"]').first();
+    this.launcherIcon    = page.locator('[aria-label="Open chat"]');
+    this.closeButton     = page.locator('[aria-label="Close chat"]');
+    this.messageInput    = page.locator('textarea[placeholder="Type your message here..."]');
+    this.sendButton      = page.locator('[aria-label="Send message"]');
+    this.botMessages     = page.locator('div.jsx-4443d8c1010b725b.mb-3.flex.justify-start');
+    this.userMessages    = page.locator('div.jsx-4443d8c1010b725b.mb-3.flex.justify-end');
+    this.welcomeMessage  = page.locator('div.jsx-4443d8c1010b725b.mb-3.flex.justify-start').first();
+    this.loadingIndicator= page.locator('[class*="loading"],[class*="typing"]').first();
+    this.tooltip         = page.locator('[role="tooltip"]').first();
   }
 
   async navigate(technology, experience, year) {
@@ -41,24 +40,36 @@ class ChatbotPage {
   async closeChatbot() {
     await this.closeButton.waitFor({ state: "visible", timeout: 10000 });
     await this.closeButton.click();
-    await this.page.waitForTimeout(1000);
+    await this.launcherIcon.waitFor({ state: "visible", timeout: 10000 });
   }
 
   async sendMessage(message) {
     await this.messageInput.waitFor({ state: "visible", timeout: 10000 });
     await this.messageInput.click();
     await this.messageInput.fill(message);
+    const countBefore = await this.botMessages.count();
     await this.sendButton.click();
+    return countBefore;
   }
 
-  async waitForBotResponse() {
-    await this.page.waitForTimeout(8000);
+  async waitForBotResponse(countBefore) {
+    await this.page.waitForFunction(
+      (before) => {
+        const msgs = document.querySelectorAll(
+          'div.jsx-4443d8c1010b725b.mb-3.flex.justify-start'
+        );
+        return msgs.length > before;
+      },
+      countBefore,
+      { timeout: 25000 }
+    );
+    await this.page.waitForTimeout(2000);
   }
 
   async sendMessageAndWait(message) {
     const start = Date.now();
-    await this.sendMessage(message);
-    await this.waitForBotResponse();
+    const countBefore = await this.sendMessage(message);
+    await this.waitForBotResponse(countBefore);
     return Date.now() - start;
   }
 
@@ -74,15 +85,15 @@ class ChatbotPage {
     return this.userMessages.nth(count - 1).innerText();
   }
 
-  async getAllMessages()      { return this.page.locator("body").innerText(); }
-  async getBotMessageCount() { return this.botMessages.count(); }
-  async isLauncherVisible()  { return this.launcherIcon.isVisible(); }
-  async isChatModalVisible() { return this.messageInput.isVisible(); }
-  async hoverLauncher()      { await this.launcherIcon.hover(); }
+  async getAllMessages()       { return this.page.locator("body").innerText(); }
+  async getBotMessageCount()  { return this.botMessages.count(); }
+  async isLauncherVisible()   { return this.launcherIcon.isVisible(); }
+  async isChatModalVisible()  { return this.messageInput.isVisible(); }
+  async hoverLauncher()       { await this.launcherIcon.hover(); }
   async getLauncherAriaLabel(){ return this.launcherIcon.getAttribute("aria-label"); }
-  async getModalRole()        { return this.closeButton.getAttribute("role"); }
-  async tabToLauncher()       { await this.page.keyboard.press("Tab"); }
-  async pressEnterOnLauncher(){ await this.launcherIcon.press("Enter"); }
+  async getModalRole()         { return this.closeButton.getAttribute("role"); }
+  async tabToLauncher()        { await this.page.keyboard.press("Tab"); }
+  async pressEnterOnLauncher() { await this.launcherIcon.press("Enter"); }
 }
 
 module.exports = { ChatbotPage };

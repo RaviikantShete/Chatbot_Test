@@ -3,7 +3,6 @@
 // Project: Paywatch Rex Chatbot Test Suite
 // LinkedIn: https://www.linkedin.com/in/ravikantshete/
 // Created: 17 March 2026 | Version: 1.0.0
-// Unauthorized use or modification is strictly prohibited.
 // ============================================================
 const { Then } = require("@cucumber/cucumber");
 const { expect } = require("@playwright/test");
@@ -21,13 +20,14 @@ Then("the message input should have an accessible label or placeholder", async f
 });
 
 Then("the bot response should be accessible in the DOM", async function () {
-  const body = await this.page.locator("body").innerText();
-  expect(body.length).toBeGreaterThan(0);
+  await this.chatbotPage.botMessages.last().waitFor({ state: "visible", timeout: 20000 });
+  const msg = await this.chatbotPage.botMessages.last().innerText();
+  expect(msg.length).toBeGreaterThan(0);
 });
 
 Then("there should be no critical axe accessibility violations", async function () {
   await injectAxe(this.page);
-  let criticalCount = 0;
+  let criticalViolations = [];
   try {
     await checkA11y(
       this.page,
@@ -35,16 +35,16 @@ Then("there should be no critical axe accessibility violations", async function 
       {
         axeOptions: { runOnly: ["wcag2a", "wcag2aa"] },
         violationCallback: (violations) => {
-          criticalCount = violations.filter((v) => v.impact === "critical").length;
+          criticalViolations = violations.filter((v) => v.impact === "critical");
         },
       }
     );
   } catch (e) {
-    if (criticalCount > 0) {
-      console.warn(`Found ${criticalCount} critical accessibility violation(s) in the app`);
+    if (criticalViolations.length > 0) {
+      console.warn(`Critical a11y violations: ${criticalViolations.map(v => v.id).join(", ")}`);
     }
   }
-  expect(true).toBe(true);
+  expect(criticalViolations.length).toBe(0);
 });
 
 Then("the close button should have an accessible name", async function () {
